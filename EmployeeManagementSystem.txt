@@ -1,0 +1,167 @@
+namespace EmployeeManagementSystem
+{
+    internal class Program
+    {
+        static Department department = new Department();
+        static void Main(string[] args)
+        {
+            string answer;
+
+            do
+            {
+                Console.WriteLine("Secim etmek isteyirsiniz mi? (beli ve ya xeyr)");
+                answer = Console.ReadLine();
+
+                if (answer == "beli")
+                {
+                    ShowMenu();
+                }
+                else if (answer == "xeyr")
+                {
+                    break;
+                }
+
+            } while (answer != "xeyr");
+        }
+
+        static void ShowMenu()
+        {
+            Console.WriteLine("Menu");
+            Console.WriteLine("1. Employee elave et:");
+            Console.WriteLine("2. Butun iscilere bax:");
+            Console.WriteLine("3. Maas araligina gore iscileri axtaris et:");
+            Console.WriteLine("0. Proqrami bitir!");
+            Console.WriteLine(" ");
+            Console.WriteLine("Secim edin!");
+
+            int choice = int.Parse(Console.ReadLine());
+
+            switch (choice)
+            {
+                case 0:
+                    Console.WriteLine("Proqram bitirildi.");
+                    break;
+                case 1:
+                    AddEmployee();
+                    break;
+                case 2:
+                    department.ShowEmployeesInfo();
+                    break;
+                case 3:
+                    SearchBySalaryRange();
+                    break;
+                default:
+                    Console.WriteLine("Yanlis secim! Zehmet olmasa duzgun secim edin.");
+                    break;
+            }
+        }
+
+        static void AddEmployee()
+        {
+            Console.Write("Ad: ");
+            string name = Console.ReadLine();
+            Console.Write("Soyad: ");
+            string surname = Console.ReadLine();
+            Console.Write("Yas: ");
+            byte age = byte.Parse(Console.ReadLine());
+            Console.Write("Departament adi: ");
+            string departmentName = Console.ReadLine();
+            Console.Write("Maas: ");
+            double salary = double.Parse(Console.ReadLine());
+
+            Employee employee = new Employee(name, surname, age, departmentName, salary);
+            department.AddEmployee(employee);
+            Console.WriteLine("Isci elave edildi.");
+        }
+
+        static void SearchBySalaryRange()
+        {
+            Console.Write("Minimum maas: ");
+            double minSalary = double.Parse(Console.ReadLine());
+            Console.Write("Maximum maas: ");
+            double maxSalary = double.Parse(Console.ReadLine());
+
+            var employees = department.GetAllEmployeesBySalary(minSalary, maxSalary);
+            if (employees.Length == 0)
+            {
+                Console.WriteLine("Verilen maas araliginda hec bir isci tapilmadi.");
+                return;
+            }
+
+            Console.WriteLine($"Maas araliginda olan isciler:");
+            foreach (var employee in employees)
+            {
+                Console.WriteLine($"{employee.GetFullData()}");
+            }
+        }
+    }
+
+    class Employee
+    {
+        public string Name;
+        public string Surname;
+        public byte Age;
+        public string DepartmentName;
+        public double Salary;
+
+        public Employee(string name, string surname, byte age, string departmentName, double salary)
+        {
+            Name = name;
+            Surname = surname;
+            Age = age;
+            DepartmentName = departmentName;
+            Salary = salary;
+        }
+
+        public string GetFullData()
+        {
+            return $"{Name} {Surname} {Age} {DepartmentName} {Salary}";
+        }
+    }
+
+    class Department
+    {
+        public Employee[] Employees = new Employee[0];
+
+        public void AddEmployee(Employee employee)
+        {
+            Array.Resize(ref Employees, Employees.Length + 1);
+            Employees[Employees.Length - 1] = employee;
+        }
+
+        public void ShowEmployeesInfo()
+        {
+            if (Employees.Length == 0)
+            {
+                Console.WriteLine("Hec bir isci tapilmadi.");
+                return;
+            }
+
+            Console.WriteLine("Butun isciler:");
+            foreach (var employee in Employees)
+            {
+                Console.WriteLine($"{employee.GetFullData()}");
+            }
+        }
+
+        public Employee[] GetAllEmployeesBySalary(double minSalary, double maxSalary)
+        {
+            Employee[] EmployeesNew = new Employee[Employees.Length];
+            int index = 0;
+
+            foreach (Employee emp in Employees)
+            {
+                if (emp.Salary >= minSalary && emp.Salary <= maxSalary)
+                {
+                    EmployeesNew[index++] = emp;
+                }
+            }
+
+            Array.Resize(ref EmployeesNew, index);
+            return EmployeesNew;
+        }
+    }
+}
+        
+    
+
